@@ -1,0 +1,35 @@
+*{
+    margin: 0 auto;
+    padding: 0px;
+}
+
+header{
+    padding: 12px;
+}
+nav{
+    padding: 12px;
+    background-color: #019DFF;
+    border-radius: 16px;
+}
+ul{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style: none;
+}
+li{
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+}
+a{
+    text-decoration: none;
+    color: aliceblue;
+}
+
+iframe{
+    border: none;
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+}
