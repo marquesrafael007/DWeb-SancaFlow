@@ -20,7 +20,8 @@
                 <input type="text" id="cidade" placeholder="Cidade">
                 <input type="text" id="cep" placeholder="CEP">
 
-                <input type="submit" value="Enviar">
+                <input class="submit" type="submit" value="Enviar">
+                <input class="submit" type="reset" value="Limpar">
             </form>
         </div>
         <div class="table">
@@ -35,9 +36,16 @@
     </main>
     <script>
 
-        document.getElementById("cep").addEventListener("blur", function() {
+        document.getElementById("cep").addEventListener("blur", function() { //Evento ao clicar fora na tela
         
-            let cep = this.value.replace(/\D/g, '');
+            let cep = this.value.replace(/\D/g, '') // Pega o valor do Cep Digitado
+
+            if(cep.lenght !== 8){
+                alert("CEP INVÁLIDO")
+                return
+            }
+
+
         
             fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(response => response.json())
