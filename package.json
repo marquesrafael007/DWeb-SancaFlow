@@ -1,0 +1,28 @@
+{
+  "name": "dweb-sancaflow",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000c\u0000r\u0000u\u0000d\u0000-\u0000d\u0000w\u0000e\u0000b\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marquesrafael007/DWeb-SancaFlow.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marquesrafael007/DWeb-SancaFlow/issues"
+  },
+  "homepage": "https://github.com/marquesrafael007/DWeb-SancaFlow#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.104.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "node-fetch": "^2.7.0",
+    "nodemon": "^3.1.14"
+  }
+}
