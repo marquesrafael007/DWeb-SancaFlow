@@ -14,63 +14,103 @@
             <h1>Cadastre uma Instituição</h1>
         </div>
         <div class="form">
-            <form action="#" method="post">
-                <input type="text" placeholder="Nome da Instituição" required>
-                <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
-                <input type="text" placeholder="Endereço" required>
-                <input type="text" placeholder="CEP" required>
-                <input type="text" placeholder="Telefone" required>
+            <form id="formInstituicao">
+                <input type="text" id="nome" placeholder="Nome da Instituição" required>
+                <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" oninput="mascaraCNPJ(this)"
+                    required>
+                <input type="text" id="endereco" placeholder="Endereço" required>
+                <input type="text" id="cep" placeholder="CEP" required>
+                <input type="text" id="telefone" placeholder="Telefone" required>
                 <input class="submit" type="submit" value="Enviar">
             </form>
-        </div>
-        <div class="table">
-            <h2>Instituições Cadastradas</h2>
 
-            <table>
+            <table id="tabelaInstituicoes">
                 <thead>
                     <tr>
-                        <th>Nome da Instituição</th>
+                        <th>Nome</th>
                         <th>CNPJ</th>
                         <th>Endereço</th>
                         <th>CEP</th>
                         <th>Telefone</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Hospital Santa Luzia</td>
-                        <td>12.345.678/0001-90</td>
-                        <td>Rua das Flores, 123</td>
-                        <td>01234-567</td>
-                        <td>(11) 98888-7777</td>
-                    </tr>
-                    <tr>
-                        <td>Escola Saber Mais</td>
-                        <td>98.765.432/0001-10</td>
-                        <td>Av. Central, 500</td>
-                        <td>04555-000</td>
-                        <td>(11) 4002-8922</td>
-                    </tr>
+                <tbody id="corpoTabela">
                 </tbody>
             </table>
-        </div>
-    </main>
-    <script>
-        function mascaraCNPJ(input) {
-            let value = input.value;
 
-            // Remove tudo o que não for dígito
-            value = value.replace(/\D/g, "");
+            <script>
+                const API_URL = 'http://localhost:3000/instituicao';
 
-            // Aplica a formatação progressivamente
-            value = value.replace(/^(\d{2})(\d)/, "$1.$2");
-            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
-            value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
-            value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                // 1. Função para enviar os dados do formulário
+                document.getElementById('formInstituicao').addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Impede a página de recarregar
 
-            input.value = value;
-        }
-    </script>
+                    const dados = {
+                        Nome: document.getElementById('nome').value,
+                        CNPJ: document.getElementById('cnpj').value,
+                        Endereço: document.getElementById('endereco').value, // Note que mandamos com acento para bater com seu back-end atual
+                        CEP: document.getElementById('cep').value,
+                        Telefone: document.getElementById('telefone').value
+                    };
+
+                    try {
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(dados)
+                        });
+
+                        if (response.ok) {
+                            alert('Instituição cadastrada com sucesso!');
+                            document.getElementById('formInstituicao').reset();
+                            carregarInstituicoes(); // Atualiza a tabela automaticamente
+                        } else {
+                            alert('Erro ao cadastrar.');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição:', error);
+                    }
+                });
+
+                // 2. Função para buscar os dados do banco e montar a tabela
+                async function carregarInstituicoes() {
+                    try {
+                        const response = await fetch(API_URL);
+                        const dados = await response.json();
+
+                        const corpoTabela = document.getElementById('corpoTabela');
+                        corpoTabela.innerHTML = ''; // Limpa a tabela antes de preencher
+
+                        dados.forEach(inst => {
+                            const linha = `
+                    <tr>
+                        <td>${inst.Nome}</td>
+                        <td>${inst.CNPJ}</td>
+                        <td>${inst.Endereço || inst.Endereco}</td> 
+                        <td>${inst.CEP}</td>
+                        <td>${inst.Telefone}</td>
+                    </tr>
+                `;
+                            corpoTabela.innerHTML += linha;
+                        });
+                    } catch (error) {
+                        console.error('Erro ao carregar tabela:', error);
+                    }
+                }
+
+                // 3. Mascara de CNPJ (Sua função original)
+                function mascaraCNPJ(input) {
+                    let value = input.value.replace(/\D/g, "");
+                    value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+                    value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+                    value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+                    value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                    input.value = value;
+                }
+
+                // Carregar os dados assim que abrir a página
+                carregarInstituicoes();
+            </script>
 </body>
 
 </html>
