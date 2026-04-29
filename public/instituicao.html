@@ -38,7 +38,9 @@
             </table>
 
             <script>
-               const API_URL = '/api/instituicao'; // Use URL relativa sempre
+               const API_URL = window.location.origin.includes('localhost')
+                ? 'http://localhost:3000/api/instituicao'
+                : '/api/instituicao';  // Isso funciona agora!
 
                 // 1. Função para enviar os dados do formulário
                 document.getElementById('formInstituicao').addEventListener('submit', async (e) => {
