@@ -38,9 +38,7 @@
             </table>
 
             <script>
-                const API_URL = window.location.origin.includes('localhost')
-                    ? 'https://d-web-sanca-flow.vercel.app/api/instituicao'
-                    : '/api/instituicao';
+               const API_URL = '/api/instituicao'; // Use URL relativa sempre
 
                 // 1. Função para enviar os dados do formulário
                 document.getElementById('formInstituicao').addEventListener('submit', async (e) => {
