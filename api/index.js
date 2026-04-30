@@ -10,8 +10,9 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
-// Servir arquivos estáticos
-app.use(express.static(path.join(__dirname, '../')));
+// Servir arquivos estáticos da raiz e da pasta public
+app.use(express.static(process.cwd()));
+app.use('/public', express.static(path.join(process.cwd(), 'public')));
 
 // Router para API
 const apiRouter = express.Router();
