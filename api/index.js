@@ -13,8 +13,11 @@ app.use(express.json());
 // Servir arquivos estáticos
 app.use(express.static(path.join(__dirname, '../')));
 
+// Router para API
+const apiRouter = express.Router();
+
 // Rota GET para listar instituições (quando não há ID específico)
-app.get('/instituicao', async (req, res) => {
+apiRouter.get('/instituicao', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('Instituições')
@@ -32,7 +35,7 @@ app.get('/instituicao', async (req, res) => {
 });
 
 // ROTA POST: Para inserir uma nova instituição
-app.post('/instituicao', async (req, res) => {
+apiRouter.post('/instituicao', async (req, res) => {
     console.log("Corpo recebido:", req.body);
 
     const { Nome, CNPJ, Endereço, CEP, Telefone } = req.body;
@@ -54,7 +57,7 @@ app.post('/instituicao', async (req, res) => {
 });
 
 // ROTA DELETE
-app.delete('/instituicao/:id', async (req, res) => {
+apiRouter.delete('/instituicao/:id', async (req, res) => {
     const { id } = req.params;
     const { data, error } = await supabase
         .from('Instituições')
@@ -66,7 +69,7 @@ app.delete('/instituicao/:id', async (req, res) => {
 });
 
 // ROTA PUT
-app.put('/instituicao/:id', async (req, res) => {
+apiRouter.put('/instituicao/:id', async (req, res) => {
     const { id } = req.params;
     const { Nome, CNPJ, Endereço, CEP, Telefone } = req.body;
 
@@ -79,9 +82,20 @@ app.put('/instituicao/:id', async (req, res) => {
     return res.status(200).json({ message: 'Atualizado com sucesso!', data });
 });
 
+// Usar o router para todas as rotas da API
+app.use('/api', apiRouter);
+
 // Rota para servir index.html na raiz
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../index.html'));
 });
+
+// Listener para desenvolvimento local
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando em http://localhost:${PORT}`);
+    });
+}
 
 module.exports = app;
