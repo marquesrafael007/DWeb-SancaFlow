@@ -40,6 +40,19 @@ apiRouter.post('/instituicao', async (req, res) => {
     const { Nome, CNPJ, Endereço, CEP, Telefone } = req.body;
 
     if (!Nome || !CNPJ || !Endereço || !CEP || !Telefone) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    }
+
+    const { data, error } = await supabase
+        .from('Instituições')
+        .insert([{ Nome, CNPJ, Endereço, CEP, Telefone }]);
+
+    if (error) {
+        console.log("Erro do Supabase:", error);
+        return res.status(500).json({ error: error.message });
+    }
+
+    return res.status(201).json({ message: 'Instituição inserida com sucesso', data });
 });
 
 // ROTA DELETE
