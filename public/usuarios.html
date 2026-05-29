@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SancaFlow - Usuários</title>
+    <link rel="stylesheet" href="css/global.css">
+</head>
+
+<body>
+    <main>
+        <div class="text">
+            <h1>Gerenciamento de Usuários</h1>
+        </div>
+        <div class="form">
+            <form id="formUsuario">
+                <input type="text" id="nome" placeholder="Nome Completo" required>
+                <input type="email" id="email" placeholder="E-mail" required>
+                <input type="text" id="cargo" placeholder="Cargo/Função" required>
+                <input class="submit" type="submit" value="Cadastrar">
+            </form>
+
+            <table id="tabelaUsuarios">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Cargo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="corpoTabela">
+                    <!-- Dados serão carregados aqui -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // Placeholder para lógica de API futura
+        console.log("Página de usuários carregada.");
+        
+        // Exemplo de preenchimento da tabela para visualização
+        const corpoTabela = document.getElementById('corpoTabela');
+        const usuariosExemplo = [
+            { nome: "Usuário Exemplo", email: "exemplo@sancaflow.com", cargo: "Administrador" }
+        ];
+
+        usuariosExemplo.forEach(u => {
+            const linha = `
+                <tr>
+                    <td>${u.nome}</td>
+                    <td>${u.email}</td>
+                    <td>${u.cargo}</td>
+                    <td>
+                        <button style="background: #ffc107;">Editar</button>
+                        <button style="background: #dc3545; color: white;">Excluir</button>
+                    </td>
+                </tr>
+            `;
+            corpoTabela.innerHTML += linha;
+        });
+
+        document.getElementById('formUsuario').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Funcionalidade de cadastro será implementada com a API.');
+        });
+    </script>
+</body>
+
+</html>

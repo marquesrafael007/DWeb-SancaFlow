@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SancaFlow</title>
-    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body>
@@ -14,63 +14,143 @@
             <h1>Cadastre uma Instituição</h1>
         </div>
         <div class="form">
-            <form action="#" method="post">
-                <input type="text" placeholder="Nome da Instituição" required>
-                <input type="text" id="cnpj" name="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
-                <input type="text" placeholder="Endereço" required>
-                <input type="text" placeholder="CEP" required>
-                <input type="text" placeholder="Telefone" required>
+            <form id="formInstituicao">
+                <input type="text" id="nome" placeholder="Nome da Instituição" required>
+                <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" minlength="18" required>
+                <input type="text" id="endereco" placeholder="Endereço" required>
+                <input type="text" id="cep" placeholder="CEP" maxlength="8" minlength="8" required>
+                <input type="text" id="telefone" placeholder="Telefone" maxlength="11" minlength="11" required>
                 <input class="submit" type="submit" value="Enviar">
             </form>
-        </div>
-        <div class="table">
-            <h2>Instituições Cadastradas</h2>
 
-            <table>
+            <table id="tabelaInstituicoes">
                 <thead>
                     <tr>
-                        <th>Nome da Instituição</th>
+                        <th>Nome</th>
                         <th>CNPJ</th>
                         <th>Endereço</th>
                         <th>CEP</th>
                         <th>Telefone</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Hospital Santa Luzia</td>
-                        <td>12.345.678/0001-90</td>
-                        <td>Rua das Flores, 123</td>
-                        <td>01234-567</td>
-                        <td>(11) 98888-7777</td>
-                    </tr>
-                    <tr>
-                        <td>Escola Saber Mais</td>
-                        <td>98.765.432/0001-10</td>
-                        <td>Av. Central, 500</td>
-                        <td>04555-000</td>
-                        <td>(11) 4002-8922</td>
-                    </tr>
+                <tbody id="corpoTabela">
                 </tbody>
             </table>
-        </div>
-    </main>
-    <script>
-        function mascaraCNPJ(input) {
-            let value = input.value;
 
-            // Remove tudo o que não for dígito
-            value = value.replace(/\D/g, "");
+            <script>
+                const API_URL = window.location.origin.includes('localhost')
+                    ? 'http://localhost:3000/api/instituicao'
+                    : '/api/instituicao';  // Isso funciona agora!
 
-            // Aplica a formatação progressivamente
-            value = value.replace(/^(\d{2})(\d)/, "$1.$2");
-            value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
-            value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
-            value = value.replace(/(\d{4})(\d)/, "$1-$2");
+                // 1. Função para enviar os dados do formulário
+                document.getElementById('formInstituicao').addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Impede a página de recarregar
 
-            input.value = value;
-        }
-    </script>
+                    const dados = {
+                        Nome: document.getElementById('nome').value,
+                        CNPJ: document.getElementById('cnpj').value,
+                        Endereço: document.getElementById('endereco').value, // Note que mandamos com acento para bater com seu back-end atual
+                        CEP: document.getElementById('cep').value,
+                        Telefone: document.getElementById('telefone').value
+                    };
+
+                    try {
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(dados)
+                        });
+
+                        if (response.ok) {
+                            alert('Instituição cadastrada com sucesso!');
+                            document.getElementById('formInstituicao').reset();
+                            carregarInstituicoes(); // Atualiza a tabela automaticamente
+                        } else {
+                            alert('Erro ao cadastrar.');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição:', error);
+                    }
+                });
+
+                // 2. Função para buscar os dados do banco e montar a tabela
+                async function carregarInstituicoes() {
+                    try {
+                        const response = await fetch(API_URL);
+                        const dados = await response.json();
+
+                        const corpoTabela = document.getElementById('corpoTabela');
+                        corpoTabela.innerHTML = ''; // Limpa a tabela antes de preencher
+
+                        dados.forEach(inst => {
+                            const linha = `
+                            <tr>
+                            <td>${inst.Nome}</td>
+                            <td>${inst.CNPJ}</td>
+                            <td>${inst.Endereço || inst.Endereco}</td> 
+                            <td>${inst.CEP}</td>
+                            <td>${inst.Telefone}</td>
+                            <td>
+                                <button onclick="prepararEdicao('${inst.id}', '${inst.Nome}')" 
+                                style="background: #ffc107; 
+                                border: none; 
+                                border-radius: 5px;">Editar</button>
+                                <button onclick="excluirInstituicao('${inst.id}')" 
+                                style="background: #dc3545; 
+                                color: white; 
+                                border: none; 
+                                border-radius: 5px;">Excluir</button>
+                            </td>
+                            </tr>
+                        `;
+                            corpoTabela.innerHTML += linha;
+                        });
+                    } catch (error) {
+                        console.error('Erro ao carregar tabela:', error);
+                    }
+                }
+                // FUNÇÃO PARA EXCLUIR 
+                async function excluirInstituicao(id) {
+                    if (!confirm('Tem certeza que deseja excluir esta instituição?')) return;
+
+                    try {
+                        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                        if (response.ok) {
+                            alert('Excluído!');
+                            carregarInstituicoes(); // Recarrega a lista
+                        }
+                    } catch (error) {
+                        console.error('Erro ao deletar:', error);
+                    }
+                }
+
+                // FUNÇÃO PARA EDITAR (Simples)
+                async function prepararEdicao(id, nomeAtual) {
+                    const novoNome = prompt("Digite o novo nome para: " + nomeAtual);
+                    const novoCNPJ = prompt("Digite o novo CNPJ para: " + nomeAtual);
+                    const novoEndereco = prompt("Digite o novo Endereço para: " + nomeAtual);
+                    const novoCEP = prompt("Digite o novo CEP para: " + nomeAtual);
+                    const novoTelefone = prompt("Digite o novo Telefone para: " + nomeAtual);
+                    if (!novoNome) return;
+
+                    try {
+                        const response = await fetch(`${API_URL}/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ Nome: novoNome, CNPJ: novoCNPJ, Endereço: novoEndereco, CEP: novoCEP, Telefone: novoTelefone }) // Aqui você pode expandir para editar todos os campos
+                        });
+
+                        if (response.ok) {
+                            alert('Nome atualizado!');
+                            carregarInstituicoes();
+                        }
+                    } catch (error) {
+                        console.error('Erro ao editar:', error);
+                    }
+                }
+
+                carregarInstituicoes();
+            </script>
 </body>
 
 </html>
