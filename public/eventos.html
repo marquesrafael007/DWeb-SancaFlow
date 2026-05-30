@@ -31,7 +31,7 @@
             <div class="form">
                 <form id="formEventos">
                     
-     
+                        <input type="text" id="description" name="name" placeholder="Nome do evento" required>
                         <input type="text" id="description" name="description" placeholder="Descrição" maxlength="300" required>
                         <input type="text" id="Address" placeholder="Endereço" required>
                         <input type="text" id="Institution" placeholder="Instituição" required>
@@ -81,6 +81,7 @@ document.getElementById('formEventos').addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const dados = {
+        nome: document.getElementById('name').value,
         descricao: document.getElementById('description').value,
         endereco: document.getElementById('Address').value,
         instituicao: document.getElementById('Institution').value,
